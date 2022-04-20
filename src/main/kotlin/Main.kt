@@ -3,9 +3,14 @@ import utils.attemptNumberValidation
 
 import utils.getValidInput
 import utils.parseJsonData
+import java.nio.file.Paths
 
 val countryNamePattern: Regex = Regex("^\\p{L}+(?: \\p{L}+)*\$")
 val numberPattern: Regex = Regex("[0-9 ]+")
+
+val projectDirAbsolutePath = Paths.get("").toAbsolutePath().toString()
+val resourcesPath = Paths.get(projectDirAbsolutePath, "/src/main/resources")
+val jsonPath = "$resourcesPath/countries.json"
 
 fun selectCountry(search: String, countries: List<Country>): Country {
     val options = countries.filter { it.name.lowercase().contains(search.lowercase()) }
@@ -17,7 +22,7 @@ fun selectCountry(search: String, countries: List<Country>): Country {
 }
 
 fun main() {
-    var countries = parseJsonData("/Users/jordanhlebechuk/IdeaProjects/test/src/main/resources/countries.json")
+    var countries = parseJsonData(jsonPath)
     val countrySearch = getValidInput("Enter country name:", countryNamePattern)
     val selectedCountry = selectCountry(countrySearch, countries)
     val numberSearch = getValidInput(

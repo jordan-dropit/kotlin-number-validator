@@ -9,14 +9,16 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
 
 fun attemptNumberValidation(inputNumber: String, country: Country): Pair<Boolean, String> {
-    lateinit var formattedNumber: PhoneNumber
-    try {
-        formattedNumber = phoneUtil.parse(inputNumber, country.code)
+    val numberOrError = try {
+        phoneUtil.parse(inputNumber, country.code)
     } catch(error: NumberParseException) {
-        println("Failed to parse number: ${error.toString()}")
+       error.errorType
     }
 
-    val finalNumber: String = phoneUtil.format(formattedNumber, PhoneNumberFormat.INTERNATIONAL)
-
-    return Pair(phoneUtil.isValidNumber(formattedNumber), finalNumber)
+    return if (numberOrError is PhoneNumber) {
+        val finalNumber: String = phoneUtil.format(numberOrError, PhoneNumberFormat.INTERNATIONAL)
+        Pair(phoneUtil.isValidNumber(numberOrError), finalNumber)
+    } else {
+        Pair(false, numberOrError.toString())
+    }
 }
